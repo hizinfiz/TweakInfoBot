@@ -233,7 +233,7 @@ def getTweak(tweak):
 			name = twk['display']
 
 			# if there is an exact match
-			if tweak == name: 
+			if tweak == name:
 				msg = genMessage(twk)
 				return msg
 			# if the match is not exact
@@ -244,6 +244,10 @@ def getTweak(tweak):
 				if (name == tweakRemoveTrailing) | (name == tweakNoSpace) | (nameNoSpace == tweakRemoveTrailing) | (nameNoSpace == tweakNoSpace):
 					msg = '* [**' + tweak + '**]' + genMessage(twk)
 					return msg
+	if msg == ('* **' + tweak + '** - Could not find info about this tweak/theme\n'):
+		custom = getMessageCustomRepoSearch(tweak)
+		if custom != False:
+			return custom
 
 	return msg
 
@@ -265,6 +269,19 @@ def getPrice(package):
 		price = '$' + str(d['msrp'])
 
 		return price
+	
+# get formatted search result from custom repos
+def getMessageCustomRepoSearch(tweak):
+    print('         Getting tweak info from @ARX8x for ' + tweak)
+    base = 'https://code.xninja.xyz/debian/?'
+    url = base+urllib.parse.urlencode({'query': tweak})
+    result = urllib.request.urlopen(url)
+    t = json.loads(result.read().decode('utf-8'))
+    if bool(t) == False:
+        return False
+    message = '* **' + t['display'] + '** - ' + t['source'] + ', ' +  ' | ' + t['section'] + ' | ' + t['summary'] + '\n';
+    return message
+
 
 # Get the repo of a tweak
 def getRepo(link):
